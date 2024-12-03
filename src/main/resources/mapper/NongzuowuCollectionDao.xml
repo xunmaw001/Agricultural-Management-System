@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NongzuowuCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.nongzuowu_id as nongzuowuId
+        ,a.yonghu_id as yonghuId
+        ,a.nongzuowu_collection_types as nongzuowuCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NongzuowuCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,nongzuowu.nongzuowu_uuid_number as nongzuowuUuidNumber
+        ,nongzuowu.nongzuowu_name as nongzuowuName
+        ,nongzuowu.nongzuowu_photo as nongzuowuPhoto
+        ,nongzuowu.zan_number as zanNumber
+        ,nongzuowu.cai_number as caiNumber
+        ,nongzuowu.nongzuowu_types as nongzuowuTypes
+        ,nongzuowu.nongzuowu_kucun_number as nongzuowuKucunNumber
+        ,nongzuowu.nongzuowu_clicknum as nongzuowuClicknum
+        ,nongzuowu.nongzuowu_kaishi_time as nongzuowuKaishiTime
+        ,nongzuowu.nongzuowu_yujijieshu_time as nongzuowuYujijieshuTime
+        ,nongzuowu.nongzuowu_content as nongzuowuContent
+        ,nongzuowu.shangxia_types as shangxiaTypes
+        ,yonghu.yonghu_uuid_number as yonghuUuidNumber
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.jinyong_types as jinyongTypes
+
+        FROM nongzuowu_collection  a
+        left JOIN nongzuowu nongzuowu ON a.nongzuowu_id = nongzuowu.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.nongzuowuId != null and params.nongzuowuId != ''">
+                and (
+                    a.nongzuowu_id = #{params.nongzuowuId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.nongzuowuCollectionTypes != null and params.nongzuowuCollectionTypes != ''">
+                and a.nongzuowu_collection_types = #{params.nongzuowuCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断农作物的id不为空 -->
+            <if test=" params.nongzuowuIdNotNull != '' and params.nongzuowuIdNotNull != null and params.nongzuowuIdNotNull != 'null' ">
+                and a.nongzuowu_id IS NOT NULL
+            </if>
+            <if test="params.tudiId != null  and params.tudiId != ''">
+                and nongzuowu.tudi_id = #{params.tudiId}
+            </if>
+            <if test=" params.nongzuowuUuidNumber != '' and params.nongzuowuUuidNumber != null and params.nongzuowuUuidNumber != 'null' ">
+                and nongzuowu.nongzuowu_uuid_number like CONCAT('%',#{params.nongzuowuUuidNumber},'%')
+            </if>
+            <if test=" params.nongzuowuName != '' and params.nongzuowuName != null and params.nongzuowuName != 'null' ">
+                and nongzuowu.nongzuowu_name like CONCAT('%',#{params.nongzuowuName},'%')
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and nongzuowu.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and nongzuowu.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and nongzuowu.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and nongzuowu.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and nongzuowu.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and nongzuowu.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.nongzuowuTypes != null  and params.nongzuowuTypes != ''">
+                and nongzuowu.nongzuowu_types = #{params.nongzuowuTypes}
+            </if>
+
+            <if test="params.nongzuowuKucunNumberStart != null  and params.nongzuowuKucunNumberStart != '' ">
+                <![CDATA[  and nongzuowu.nongzuowu_kucun_number >= #{params.nongzuowuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.nongzuowuKucunNumberEnd != null  and params.nongzuowuKucunNumberEnd != '' ">
+                <![CDATA[  and nongzuowu.nongzuowu_kucun_number <= #{params.nongzuowuKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.nongzuowuKucunNumber != null  and params.nongzuowuKucunNumber != '' ">
+                and nongzuowu.nongzuowu_kucun_number = #{params.nongzuowuKucunNumber}
+            </if>
+            <if test="params.nongzuowuClicknumStart != null  and params.nongzuowuClicknumStart != '' ">
+                <![CDATA[  and nongzuowu.nongzuowu_clicknum >= #{params.nongzuowuClicknumStart}   ]]>
+            </if>
+            <if test="params.nongzuowuClicknumEnd != null  and params.nongzuowuClicknumEnd != '' ">
+                <![CDATA[  and nongzuowu.nongzuowu_clicknum <= #{params.nongzuowuClicknumEnd}   ]]>
+            </if>
+            <if test="params.nongzuowuClicknum != null  and params.nongzuowuClicknum != '' ">
+                and nongzuowu.nongzuowu_clicknum = #{params.nongzuowuClicknum}
+            </if>
+            <if test=" params.nongzuowuKaishiTimeStart != '' and params.nongzuowuKaishiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.nongzuowu_kaishi_time) >= UNIX_TIMESTAMP(#{params.nongzuowuKaishiTimeStart}) ]]>
+            </if>
+            <if test=" params.nongzuowuKaishiTimeEnd != '' and params.nongzuowuKaishiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.nongzuowu_kaishi_time) <= UNIX_TIMESTAMP(#{params.nongzuowuKaishiTimeEnd}) ]]>
+            </if>
+            <if test="params.nongzuowuKaishiTime != null and params.nongzuowuKaishiTime != ''">
+                and a.nongzuowu_kaishi_time = #{params.nongzuowuKaishiTime}
+            </if>
+            <if test=" params.nongzuowuYujijieshuTimeStart != '' and params.nongzuowuYujijieshuTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.nongzuowu_yujijieshu_time) >= UNIX_TIMESTAMP(#{params.nongzuowuYujijieshuTimeStart}) ]]>
+            </if>
+            <if test=" params.nongzuowuYujijieshuTimeEnd != '' and params.nongzuowuYujijieshuTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.nongzuowu_yujijieshu_time) <= UNIX_TIMESTAMP(#{params.nongzuowuYujijieshuTimeEnd}) ]]>
+            </if>
+            <if test="params.nongzuowuYujijieshuTime != null and params.nongzuowuYujijieshuTime != ''">
+                and a.nongzuowu_yujijieshu_time = #{params.nongzuowuYujijieshuTime}
+            </if>
+            <if test=" params.nongzuowuContent != '' and params.nongzuowuContent != null and params.nongzuowuContent != 'null' ">
+                and nongzuowu.nongzuowu_content like CONCAT('%',#{params.nongzuowuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and nongzuowu.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(nongzuowu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuUuidNumber != '' and params.yonghuUuidNumber != null and params.yonghuUuidNumber != 'null' ">
+                and yonghu.yonghu_uuid_number like CONCAT('%',#{params.yonghuUuidNumber},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.newMoney != null and params.newMoney != ''">
+                and a.new_money = #{params.newMoney}
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and yonghu.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

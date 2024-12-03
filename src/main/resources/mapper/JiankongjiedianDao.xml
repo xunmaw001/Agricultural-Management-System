@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiankongjiedianDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jiankongjiedian_uuid_number as jiankongjiedianUuidNumber
+        ,a.jiankongjiedian_name as jiankongjiedianName
+        ,a.jiankongjiedian_photo as jiankongjiedianPhoto
+        ,a.jiankongjiedian_address as jiankongjiedianAddress
+        ,a.jiankongjiedian_types as jiankongjiedianTypes
+        ,a.jiankongjiedian_content as jiankongjiedianContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiankongjiedianView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM jiankongjiedian  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.jiankongjiedianUuidNumber != '' and params.jiankongjiedianUuidNumber != null and params.jiankongjiedianUuidNumber != 'null' ">
+                and a.jiankongjiedian_uuid_number like CONCAT('%',#{params.jiankongjiedianUuidNumber},'%')
+            </if>
+            <if test=" params.jiankongjiedianName != '' and params.jiankongjiedianName != null and params.jiankongjiedianName != 'null' ">
+                and a.jiankongjiedian_name like CONCAT('%',#{params.jiankongjiedianName},'%')
+            </if>
+            <if test=" params.jiankongjiedianAddress != '' and params.jiankongjiedianAddress != null and params.jiankongjiedianAddress != 'null' ">
+                and a.jiankongjiedian_address like CONCAT('%',#{params.jiankongjiedianAddress},'%')
+            </if>
+            <if test="params.jiankongjiedianTypes != null and params.jiankongjiedianTypes != ''">
+                and a.jiankongjiedian_types = #{params.jiankongjiedianTypes}
+            </if>
+            <if test=" params.jiankongjiedianContent != '' and params.jiankongjiedianContent != null and params.jiankongjiedianContent != 'null' ">
+                and a.jiankongjiedian_content like CONCAT('%',#{params.jiankongjiedianContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

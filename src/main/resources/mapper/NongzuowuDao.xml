@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NongzuowuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.tudi_id as tudiId
+        ,a.nongzuowu_uuid_number as nongzuowuUuidNumber
+        ,a.nongzuowu_name as nongzuowuName
+        ,a.nongzuowu_photo as nongzuowuPhoto
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.nongzuowu_types as nongzuowuTypes
+        ,a.nongzuowu_kucun_number as nongzuowuKucunNumber
+        ,a.nongzuowu_clicknum as nongzuowuClicknum
+        ,a.nongzuowu_kaishi_time as nongzuowuKaishiTime
+        ,a.nongzuowu_yujijieshu_time as nongzuowuYujijieshuTime
+        ,a.nongzuowu_content as nongzuowuContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NongzuowuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,tudi.tudi_name as tudiName
+        ,tudi.tudi_uuid_number as tudiUuidNumber
+        ,tudi.tudi_photo as tudiPhoto
+        ,tudi.tudi_address as tudiAddress
+        ,tudi.zan_number as zanNumber
+        ,tudi.cai_number as caiNumber
+        ,tudi.tudi_types as tudiTypes
+        ,tudi.tudi_mianji as tudiMianji
+        ,tudi.tudi_clicknum as tudiClicknum
+        ,tudi.tudi_time as tudiTime
+        ,tudi.tudi_content as tudiContent
+        ,tudi.shangxia_types as shangxiaTypes
+
+        FROM nongzuowu  a
+        left JOIN tudi tudi ON a.tudi_id = tudi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.tudiId != null and params.tudiId != ''">
+                and (
+                    a.tudi_id = #{params.tudiId}
+                )
+            </if>
+            <if test=" params.nongzuowuUuidNumber != '' and params.nongzuowuUuidNumber != null and params.nongzuowuUuidNumber != 'null' ">
+                and a.nongzuowu_uuid_number like CONCAT('%',#{params.nongzuowuUuidNumber},'%')
+            </if>
+            <if test=" params.nongzuowuName != '' and params.nongzuowuName != null and params.nongzuowuName != 'null' ">
+                and a.nongzuowu_name like CONCAT('%',#{params.nongzuowuName},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.nongzuowuTypes != null and params.nongzuowuTypes != ''">
+                and a.nongzuowu_types = #{params.nongzuowuTypes}
+            </if>
+            <if test="params.nongzuowuKucunNumberStart != null and params.nongzuowuKucunNumberStart != ''">
+                <![CDATA[  and a.nongzuowu_kucun_number >= #{params.nongzuowuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.nongzuowuKucunNumberEnd != null and params.nongzuowuKucunNumberEnd != ''">
+                <![CDATA[  and a.nongzuowu_kucun_number <= #{params.nongzuowuKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.nongzuowuKucunNumber != null and params.nongzuowuKucunNumber != ''">
+                and a.nongzuowu_kucun_number = #{params.nongzuowuKucunNumber}
+             </if>
+            <if test="params.nongzuowuClicknumStart != null and params.nongzuowuClicknumStart != ''">
+                <![CDATA[  and a.nongzuowu_clicknum >= #{params.nongzuowuClicknumStart}   ]]>
+            </if>
+            <if test="params.nongzuowuClicknumEnd != null and params.nongzuowuClicknumEnd != ''">
+                <![CDATA[  and a.nongzuowu_clicknum <= #{params.nongzuowuClicknumEnd}   ]]>
+            </if>
+             <if test="params.nongzuowuClicknum != null and params.nongzuowuClicknum != ''">
+                and a.nongzuowu_clicknum = #{params.nongzuowuClicknum}
+             </if>
+            <if test=" params.nongzuowuKaishiTimeStart != '' and params.nongzuowuKaishiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.nongzuowu_kaishi_time) >= UNIX_TIMESTAMP(#{params.nongzuowuKaishiTimeStart}) ]]>
+            </if>
+            <if test=" params.nongzuowuKaishiTimeEnd != '' and params.nongzuowuKaishiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.nongzuowu_kaishi_time) <= UNIX_TIMESTAMP(#{params.nongzuowuKaishiTimeEnd}) ]]>
+            </if>
+            <if test="params.nongzuowuKaishiTime != null and params.nongzuowuKaishiTime != ''">
+                and a.nongzuowu_kaishi_time = #{params.nongzuowuKaishiTime}
+            </if>
+            <if test=" params.nongzuowuYujijieshuTimeStart != '' and params.nongzuowuYujijieshuTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.nongzuowu_yujijieshu_time) >= UNIX_TIMESTAMP(#{params.nongzuowuYujijieshuTimeStart}) ]]>
+            </if>
+            <if test=" params.nongzuowuYujijieshuTimeEnd != '' and params.nongzuowuYujijieshuTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.nongzuowu_yujijieshu_time) <= UNIX_TIMESTAMP(#{params.nongzuowuYujijieshuTimeEnd}) ]]>
+            </if>
+            <if test="params.nongzuowuYujijieshuTime != null and params.nongzuowuYujijieshuTime != ''">
+                and a.nongzuowu_yujijieshu_time = #{params.nongzuowuYujijieshuTime}
+            </if>
+            <if test=" params.nongzuowuContent != '' and params.nongzuowuContent != null and params.nongzuowuContent != 'null' ">
+                and a.nongzuowu_content like CONCAT('%',#{params.nongzuowuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断土地规划的id不为空 -->
+            <if test=" params.tudiIdNotNull != '' and params.tudiIdNotNull != null and params.tudiIdNotNull != 'null' ">
+                and a.tudi_id IS NOT NULL
+            </if>
+            <if test=" params.tudiName != '' and params.tudiName != null and params.tudiName != 'null' ">
+                and tudi.tudi_name like CONCAT('%',#{params.tudiName},'%')
+            </if>
+            <if test=" params.tudiUuidNumber != '' and params.tudiUuidNumber != null and params.tudiUuidNumber != 'null' ">
+                and tudi.tudi_uuid_number like CONCAT('%',#{params.tudiUuidNumber},'%')
+            </if>
+            <if test=" params.tudiAddress != '' and params.tudiAddress != null and params.tudiAddress != 'null' ">
+                and tudi.tudi_address like CONCAT('%',#{params.tudiAddress},'%')
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and tudi.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and tudi.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and tudi.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and tudi.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and tudi.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and tudi.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.tudiTypes != null  and params.tudiTypes != ''">
+                and tudi.tudi_types = #{params.tudiTypes}
+            </if>
+
+            <if test="params.tudiMianjiStart != null  and params.tudiMianjiStart != '' ">
+                <![CDATA[  and tudi.tudi_mianji >= #{params.tudiMianjiStart}   ]]>
+            </if>
+            <if test="params.tudiMianjiEnd != null  and params.tudiMianjiEnd != '' ">
+                <![CDATA[  and tudi.tudi_mianji <= #{params.tudiMianjiEnd}   ]]>
+            </if>
+            <if test="params.tudiMianji != null  and params.tudiMianji != '' ">
+                and tudi.tudi_mianji = #{params.tudiMianji}
+            </if>
+            <if test="params.tudiClicknumStart != null  and params.tudiClicknumStart != '' ">
+                <![CDATA[  and tudi.tudi_clicknum >= #{params.tudiClicknumStart}   ]]>
+            </if>
+            <if test="params.tudiClicknumEnd != null  and params.tudiClicknumEnd != '' ">
+                <![CDATA[  and tudi.tudi_clicknum <= #{params.tudiClicknumEnd}   ]]>
+            </if>
+            <if test="params.tudiClicknum != null  and params.tudiClicknum != '' ">
+                and tudi.tudi_clicknum = #{params.tudiClicknum}
+            </if>
+            <if test=" params.tudiTimeStart != '' and params.tudiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(tudi.tudi_time) >= UNIX_TIMESTAMP(#{params.tudiTimeStart}) ]]>
+            </if>
+            <if test=" params.tudiTimeEnd != '' and params.tudiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(tudi.tudi_time) <= UNIX_TIMESTAMP(#{params.tudiTimeEnd}) ]]>
+            </if>
+            <if test="params.tudiTime != null and params.tudiTime != ''">
+                and a.tudi_time = #{params.tudiTime}
+            </if>
+            <if test=" params.tudiContent != '' and params.tudiContent != null and params.tudiContent != 'null' ">
+                and tudi.tudi_content like CONCAT('%',#{params.tudiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and tudi.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(tudi.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(tudi.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
